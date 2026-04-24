@@ -1,145 +1,115 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>사주 종합 분석 (풀버전)</title>
-
-<style>
-body{font-family:Arial;background:#f5f7fb;padding:20px;}
-.container{max-width:900px;margin:auto;background:#fff;padding:20px;border-radius:15px;}
-input,select{width:100%;padding:10px;margin:5px 0 15px;}
-button{width:100%;padding:14px;background:#2f6fed;color:#fff;border:none;font-size:16px;}
-.choice-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
-.choice-card{border:1px solid #ddd;padding:12px;border-radius:12px;text-align:center;cursor:pointer;}
-.choice-card.active{border:2px solid #2f6fed;background:#eef4ff;}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>사주·이름·관상·손금 종합 풀이</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#f5f7fb;margin:0;padding:22px;color:#222;}
+    .container{max-width:920px;margin:auto;background:#fff;padding:24px;border-radius:18px;box-shadow:0 10px 28px rgba(0,0,0,.08);}
+    h1,h2{text-align:center;} h3{margin-top:28px;}
+    .card{background:#fafafa;border:1px solid #e7e7e7;border-radius:16px;padding:18px;margin-top:18px;}
+    label{display:block;margin-top:14px;font-weight:bold;}
+    input,select,button{width:100%;padding:12px;margin-top:8px;border-radius:10px;border:1px solid #ddd;box-sizing:border-box;font-size:15px;}
+    button{background:#2f6fed;color:#fff;font-weight:bold;cursor:pointer;border:none;margin-top:20px;}
+    button:hover{background:#1f57c8;}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .choice-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:10px;}
+    .choice-card{background:#fff;border:1px solid #ddd;border-radius:14px;padding:13px;text-align:center;cursor:pointer;transition:.2s;}
+    .choice-card:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(0,0,0,.08);}
+    .choice-card.active{border:2px solid #2f6fed;background:#eef4ff;}
+    .notice{font-size:13px;color:#777;line-height:1.6;margin-top:12px;}
+    .result{display:none;margin-top:24px;background:#f0f4ff;border-radius:16px;padding:22px;line-height:1.85;}
+    .face-icon{width:72px;height:82px;border:3px solid #333;border-radius:45% 45% 48% 48%;margin:0 auto 8px;position:relative;background:#fff;}
+    .face-icon:before{content:"";position:absolute;left:18px;top:35px;width:8px;height:8px;background:#333;border-radius:50%;box-shadow:25px 0 #333;}
+    .face-icon:after{content:"";position:absolute;left:25px;bottom:16px;width:20px;height:8px;border-bottom:3px solid #333;border-radius:50%;}
+    .forehead-wide{height:92px;padding-top:10px}.forehead-narrow{height:70px;margin-top:12px}.eyes-soft:before{height:5px}.eyes-sharp:before{width:14px;height:4px;border-radius:0;transform:rotate(-12deg);box-shadow:25px 7px #333}.mouth-up:after{transform:rotate(180deg);bottom:12px}.mouth-down:after{border-top:3px solid #333;border-bottom:0;bottom:18px}
+    .palm-icon{width:86px;height:95px;margin:0 auto 8px;border:3px solid #333;border-radius:42px 42px 28px 28px;position:relative;background:#fff;}
+    .palm-icon span{position:absolute;display:block;border-top:3px solid #2f6fed;border-radius:50%;}
+    .line-life{width:48px;height:48px;left:13px;top:30px;transform:rotate(70deg)}.line-head{width:54px;left:18px;top:48px}.line-heart{width:52px;left:18px;top:30px}.line-fate{height:55px;left:43px;top:30px;border-left:3px solid #2f6fed;border-top:0!important}.line-light{opacity:.35;border-top-width:2px!important}.line-broken{border-style:dashed!important}.line-curved{height:28px;transform:rotate(12deg)}.line-short{width:28px!important}
+    @media(max-width:720px){body{padding:12px}.container{padding:16px}.grid,.choice-grid{grid-template-columns:1fr;}}
+  </style>
 </head>
-
 <body>
 <div class="container">
+  <h1>사주·이름·관상·손금 종합 풀이</h1>
+  <p class="notice" style="text-align:center;">사진 업로드 없이, 생년월일·이름·MBTI·혈액형·직업 정보와 그림 선택을 바탕으로 종합 풀이를 제공합니다.</p>
 
-<h2>사주 종합 분석 (풀버전)</h2>
+  <div class="card">
+    <h2>1. 기본 정보</h2>
+    <label>이름 (한자)</label><input id="name" placeholder="예: 金東洙">
+    <div class="grid">
+      <div><label>성별</label><select id="gender"><option value="unknown">모름/선택안함</option><option value="male">남성</option><option value="female">여성</option></select></div>
+      <div><label>양력/음력</label><select id="calendarType"><option value="solar">양력</option><option value="lunar">음력</option><option value="unknown">모름</option></select></div>
+      <div><label>태어난 연도</label><input id="year" type="number" placeholder="예: 1990"></div>
+      <div><label>태어난 월</label><input id="month" type="number" placeholder="예: 5"></div>
+      <div><label>태어난 일</label><input id="day" type="number" placeholder="예: 20"></div>
+      <div><label>태어난 시간</label><select id="hour"><option value="0">자시 23:00~01:00</option><option value="2">축시 01:00~03:00</option><option value="4">인시 03:00~05:00</option><option value="6">묘시 05:00~07:00</option><option value="8">진시 07:00~09:00</option><option value="10">사시 09:00~11:00</option><option value="12">오시 11:00~13:00</option><option value="14">미시 13:00~15:00</option><option value="16">신시 15:00~17:00</option><option value="18">유시 17:00~19:00</option><option value="20">술시 19:00~21:00</option><option value="22">해시 21:00~23:00</option></select></div>
+    </div>
+  </div>
 
-<label>출생년도</label>
-<input id="year" type="number">
+  <div class="card">
+    <h2>2. 추가 성향 정보</h2>
+    <label>혈액형</label><select id="bloodType"><option value="unknown">모름</option><option value="A">A형</option><option value="B">B형</option><option value="O">O형</option><option value="AB">AB형</option></select>
+    <label>MBTI</label><select id="mbti"><option value="unknown">모름</option><option>ISTJ</option><option>ISFJ</option><option>INFJ</option><option>INTJ</option><option>ISTP</option><option>ISFP</option><option>INFP</option><option>INTP</option><option>ESTP</option><option>ESFP</option><option>ENFP</option><option>ENTP</option><option>ESTJ</option><option>ESFJ</option><option>ENFJ</option><option>ENTJ</option></select>
+    <label>직장/활동 유형</label><select id="jobType" onchange="toggleJobDetail()"><option value="unknown">모름</option><option value="worker">직장인</option><option value="self">자영업/사업자</option><option value="college">대학생</option><option value="jobseeker">취업준비생</option><option value="etc">기타</option></select>
+    <div id="jobDetailBox" style="display:none;"><label id="jobDetailLabel">직장 및 하는 일</label><input id="jobDetail" placeholder="예: 현장관리, 생산관리, 간호학과"></div>
+  </div>
 
-<label>출생월</label>
-<input id="month" type="number">
+  <div class="card">
+    <h2>3. 관상 체크</h2>
+    <p class="notice">사진 업로드 없이 아래 그림을 보고 가장 비슷한 항목을 선택하세요.</p>
+    <label>이마 형태</label><div class="choice-grid"><div class="choice-card" onclick="selectVisual('forehead','wide',this)"><div class="face-icon forehead-wide"></div><b>넓은 이마</b><br><small>계획성·학습운</small></div><div class="choice-card active" onclick="selectVisual('forehead','normal',this)"><div class="face-icon"></div><b>보통 이마</b><br><small>균형·현실감</small></div><div class="choice-card" onclick="selectVisual('forehead','narrow',this)"><div class="face-icon forehead-narrow"></div><b>좁은 이마</b><br><small>실행력·현장감</small></div></div><select id="forehead" style="display:none"><option value="wide">넓은 편</option><option value="normal" selected>보통</option><option value="narrow">좁은 편</option></select>
+    <label>눈매 느낌</label><div class="choice-grid"><div class="choice-card active" onclick="selectVisual('eyes','clear',this)"><div class="face-icon"></div><b>또렷한 눈매</b><br><small>집중력·표현력</small></div><div class="choice-card" onclick="selectVisual('eyes','soft',this)"><div class="face-icon eyes-soft"></div><b>부드러운 눈매</b><br><small>친화력·배려</small></div><div class="choice-card" onclick="selectVisual('eyes','sharp',this)"><div class="face-icon eyes-sharp"></div><b>날카로운 눈매</b><br><small>판단력·승부욕</small></div></div><select id="eyes" style="display:none"><option value="clear" selected>맑고 또렷함</option><option value="soft">부드러운 인상</option><option value="sharp">날카로운 인상</option></select>
+    <label>코 형태</label><div class="choice-grid"><div class="choice-card active" onclick="selectVisual('nose','straight',this)"><div class="face-icon"></div><b>곧은 코</b><br><small>책임감·중심</small></div><div class="choice-card" onclick="selectVisual('nose','round',this)"><div class="face-icon"></div><b>둥근 코</b><br><small>사람복·재물감</small></div><div class="choice-card" onclick="selectVisual('nose','small',this)"><div class="face-icon forehead-narrow"></div><b>작은 코</b><br><small>신중함·세밀함</small></div></div><select id="nose" style="display:none"><option value="straight" selected>곧은 편</option><option value="round">둥근 편</option><option value="small">작은 편</option></select>
+    <label>입매 느낌</label><div class="choice-grid"><div class="choice-card active" onclick="selectVisual('mouth','balanced',this)"><div class="face-icon"></div><b>균형 입매</b><br><small>말·행동 균형</small></div><div class="choice-card" onclick="selectVisual('mouth','up',this)"><div class="face-icon mouth-up"></div><b>올라간 입꼬리</b><br><small>긍정·대인운</small></div><div class="choice-card" onclick="selectVisual('mouth','down',this)"><div class="face-icon mouth-down"></div><b>내려간 입꼬리</b><br><small>신중·책임감</small></div></div><select id="mouth" style="display:none"><option value="balanced" selected>균형 있음</option><option value="up">입꼬리가 올라간 편</option><option value="down">입꼬리가 내려간 편</option></select>
+  </div>
 
-<label>출생일</label>
-<input id="day" type="number">
+  <div class="card">
+    <h2>4. 손금 체크</h2>
+    <p class="notice">아래 손바닥 그림을 보고 가장 비슷한 손금 형태를 선택하세요.</p>
+    <label>생명선</label><div class="choice-grid"><div class="choice-card active" onclick="selectVisual('lifeLine','deep',this)"><div class="palm-icon"><span class="line-life"></span></div><b>깊고 선명함</b><br><small>체력·회복력</small></div><div class="choice-card" onclick="selectVisual('lifeLine','light',this)"><div class="palm-icon"><span class="line-life line-light"></span></div><b>연하고 흐림</b><br><small>컨디션 관리</small></div><div class="choice-card" onclick="selectVisual('lifeLine','broken',this)"><div class="palm-icon"><span class="line-life line-broken"></span></div><b>끊김 있음</b><br><small>변화·전환점</small></div></div><select id="lifeLine" style="display:none"><option value="deep" selected>깊고 선명함</option><option value="light">연하고 흐림</option><option value="broken">중간에 끊김이 있음</option></select>
+    <label>두뇌선</label><div class="choice-grid"><div class="choice-card active" onclick="selectVisual('headLine','straight',this)"><div class="palm-icon"><span class="line-head"></span></div><b>곧고 길게</b><br><small>현실 판단</small></div><div class="choice-card" onclick="selectVisual('headLine','curved',this)"><div class="palm-icon"><span class="line-head line-curved"></span></div><b>아래로 휘어짐</b><br><small>상상력·감성</small></div><div class="choice-card" onclick="selectVisual('headLine','short',this)"><div class="palm-icon"><span class="line-head line-short"></span></div><b>짧은 편</b><br><small>결단·행동력</small></div></div><select id="headLine" style="display:none"><option value="straight" selected>곧고 길게 뻗음</option><option value="curved">아래로 휘어짐</option><option value="short">짧은 편</option></select>
+    <label>감정선</label><div class="choice-grid"><div class="choice-card active" onclick="selectVisual('heartLine','clear',this)"><div class="palm-icon"><span class="line-heart"></span></div><b>선명·균형</b><br><small>감정 안정</small></div><div class="choice-card" onclick="selectVisual('heartLine','chain',this)"><div class="palm-icon"><span class="line-heart line-broken"></span></div><b>잔선 많음</b><br><small>감수성</small></div><div class="choice-card" onclick="selectVisual('heartLine','short',this)"><div class="palm-icon"><span class="line-heart line-short"></span></div><b>짧은 편</b><br><small>현실 판단</small></div></div><select id="heartLine" style="display:none"><option value="clear" selected>선명하고 균형 있음</option><option value="chain">잔선이 많음</option><option value="short">짧은 편</option></select>
+    <label>운명선</label><div class="choice-grid"><div class="choice-card active" onclick="selectVisual('fateLine','strong',this)"><div class="palm-icon"><span class="line-fate"></span></div><b>뚜렷함</b><br><small>목표·직업운</small></div><div class="choice-card" onclick="selectVisual('fateLine','weak',this)"><div class="palm-icon"><span class="line-fate line-light"></span></div><b>약하거나 흐림</b><br><small>다양한 경험</small></div><div class="choice-card" onclick="selectVisual('fateLine','none',this)"><div class="palm-icon"></div><b>잘 안 보임</b><br><small>자유로운 선택</small></div></div><select id="fateLine" style="display:none"><option value="strong" selected>뚜렷함</option><option value="weak">약하거나 흐림</option><option value="none">잘 보이지 않음</option></select>
+  </div>
 
-<label>출생시간</label>
-<select id="hour">
-<option value="0">자</option><option value="2">축</option>
-<option value="4">인</option><option value="6">묘</option>
-<option value="8">진</option><option value="10">사</option>
-<option value="12">오</option><option value="14">미</option>
-<option value="16">신</option><option value="18">유</option>
-<option value="20">술</option><option value="22">해</option>
-</select>
-
-<label>혈액형</label>
-<select id="blood">
-<option value="unknown">모름</option>
-<option value="A">A</option><option value="B">B</option>
-<option value="O">O</option><option value="AB">AB</option>
-</select>
-
-<label>MBTI</label>
-<input id="mbti" placeholder="예: ESTJ">
-
-<label>직업/하는일</label>
-<input id="job" placeholder="예: 현장관리">
-
-<hr>
-
-<h3>관상 선택</h3>
-<div class="choice-grid">
-<div class="choice-card active" onclick="selectVisual('face','good',this)">균형형</div>
-<div class="choice-card" onclick="selectVisual('face','sharp',this)">날카형</div>
-<div class="choice-card" onclick="selectVisual('face','soft',this)">부드형</div>
+  <label style="display:flex;align-items:center;gap:8px;margin-top:20px;font-weight:normal"><input type="checkbox" id="privacyAgree" style="width:auto;margin:0">개인정보 수집 및 이용에 동의합니다. 입력 정보는 결과 계산용으로만 사용되며 서버에 저장되지 않습니다.</label>
+  <button onclick="calc()">종합 풀이 보기</button><button onclick="copyResult()" style="background:#222">결과 복사하기</button><button onclick="shareResult()" style="background:#00a86b">내 결과 공유하기</button>
+  <div id="result" class="result"></div>
+  <p class="notice">※ 참고용 서비스입니다. 실제 전문 사주 분석은 정확한 절기, 음력 변환, 출생지 시간 보정, 전문 만세력 기준이 필요합니다.</p>
 </div>
-<select id="face" style="display:none;">
-<option value="good" selected></option>
-<option value="sharp"></option>
-<option value="soft"></option>
-</select>
-
-<hr>
-
-<h3>손금 선택</h3>
-<div class="choice-grid">
-<div class="choice-card active" onclick="selectVisual('life','deep',this)">생명선 깊음</div>
-<div class="choice-card" onclick="selectVisual('life','light',this)">얕음</div>
-<div class="choice-card" onclick="selectVisual('life','broken',this)">끊김</div>
-</div>
-<select id="life" style="display:none;">
-<option value="deep" selected></option>
-<option value="light"></option>
-<option value="broken"></option>
-</select>
-
-<button onclick="calc()">결과 보기</button>
-
-<div id="result"></div>
-
-</div>
-
 <script>
-
-function selectVisual(id,value,el){
-document.getElementById(id).value=value;
-const cards=el.parentElement.querySelectorAll('.choice-card');
-cards.forEach(c=>c.classList.remove('active'));
-el.classList.add('active');
-}
-
-function calc(){
-let main="토";
-let job=document.getElementById("job").value;
-let mbti=document.getElementById("mbti").value;
-let blood=document.getElementById("blood").value;
-
-let result=`
-<h3>종합 분석</h3>
-
-이 사주는 기본적으로 안정성과 책임감을 중심으로 하는 구조입니다.
-특히 현실적인 판단과 결과 중심 사고가 강하게 작용하며,
-단순 업무보다 관리·운영·책임 역할에서 강점을 보입니다.
-
-<h4>직업 분석</h4>
-현재 직업(${job})은 사주와 비교했을 때 비교적 적합한 흐름입니다.
-다만 체계 관리와 문서 정리 능력을 강화하면 더 큰 성과가 가능합니다.
-
-<h4>재물운</h4>
-이 사주는 한 번에 크게 벌기보다는 꾸준히 쌓는 구조입니다.
-부동산, 장기 투자, 안정형 자산과 궁합이 좋습니다.
-
-<h4>투자 성향</h4>
-안정형 투자자 성향입니다.
-단타보다는 장기 투자 전략이 유리합니다.
-
-<h4>MBTI + 혈액형 분석</h4>
-${mbti} 성향과 ${blood}형 특성이 결합되면서
-현실적 판단과 실행력이 강화됩니다.
-
-<h4>관상</h4>
-선택 결과: ${document.getElementById("face").value}
-
-<h4>손금</h4>
-생명선: ${document.getElementById("life").value}
-
-<h4>최종 조언</h4>
-꾸준함이 가장 큰 무기입니다.
-급하게 성과를 내기보다 기반을 쌓을수록 운이 강해집니다.
-`;
-
-document.getElementById("result").innerHTML=result;
-}
-
+const stems=["갑","을","병","정","무","기","경","신","임","계"],branches=["자","축","인","묘","진","사","오","미","신","유","술","해"];
+const elementMap={갑:"목",을:"목",병:"화",정:"화",무:"토",기:"토",경:"금",신:"금",임:"수",계:"수"};
+const branchElements={자:"수",축:"토",인:"목",묘:"목",진:"토",사:"화",오:"화",미:"토",신:"금",유:"금",술:"토",해:"수"};
+const elementText={목:"성장, 계획, 추진력이 강한 타입입니다.",화:"표현력, 열정, 인기운이 강한 타입입니다.",토:"안정감, 책임감, 현실감각이 강한 타입입니다.",금:"판단력, 결단력, 원칙성이 강한 타입입니다.",수:"지혜, 유연함, 분석력이 강한 타입입니다."};
+const elementCycle=["목","화","토","금","수"];
+const solarTermsApprox=[{month:2,day:4,branch:"인"},{month:3,day:6,branch:"묘"},{month:4,day:5,branch:"진"},{month:5,day:6,branch:"사"},{month:6,day:6,branch:"오"},{month:7,day:7,branch:"미"},{month:8,day:8,branch:"신"},{month:9,day:8,branch:"유"},{month:10,day:8,branch:"술"},{month:11,day:7,branch:"해"},{month:12,day:7,branch:"자"},{month:1,day:6,branch:"축"}];
+function selectVisual(id,value,el){document.getElementById(id).value=value;el.parentElement.querySelectorAll('.choice-card').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+function toggleJobDetail(){const t=jobType.value,b=jobDetailBox,l=jobDetailLabel,i=jobDetail;if(t==="unknown"){b.style.display="none";i.value="";return}b.style.display="block";if(t==="college"){l.innerText="학과";i.placeholder="예: 간호학과, 전기공학과"}else{l.innerText="직장 및 하는 일";i.placeholder="예: 현장관리, 생산관리, 자영업"}}
+function getPillar(n){return stems[((n%10)+10)%10]+branches[((n%12)+12)%12]}
+function getYearPillarByIpchun(y,m,d){let yy=y;if(m<2||(m===2&&d<4))yy=y-1;return getPillar(yy-4)}
+function getMonthBranch(m,d){const order=["인","묘","진","사","오","미","신","유","술","해","자","축"],term=solarTermsApprox.find(t=>t.month===m);let idx=order.indexOf(term?term.branch:"인");if(term&&d<term.day)idx=(idx+11)%12;return order[idx]}
+function getMonthStem(ys,mb){const order=["인","묘","진","사","오","미","신","유","술","해","자","축"],idx=order.indexOf(mb),map={갑:2,기:2,을:4,경:4,병:6,신:6,정:8,임:8,무:0,계:0};return stems[(map[ys]+idx)%10]}
+function getMonthPillarAccurate(y,m,d,yp){const b=getMonthBranch(m,d);return getMonthStem(yp[0],b)+b}
+function getDayPillarAccurate(y,m,d){const base=new Date(1900,0,31),target=new Date(y,m-1,d),diff=Math.floor((target-base)/86400000);return getPillar(diff)}
+function getHourBranchByHour(h){if(h===0)return"자";if(h<3)return"축";if(h<5)return"인";if(h<7)return"묘";if(h<9)return"진";if(h<11)return"사";if(h<13)return"오";if(h<15)return"미";if(h<17)return"신";if(h<19)return"유";if(h<21)return"술";return"해"}
+function getHourStem(ds,hb){const order=["자","축","인","묘","진","사","오","미","신","유","술","해"],idx=order.indexOf(hb),map={갑:0,기:0,을:2,경:2,병:4,신:4,정:6,임:6,무:8,계:8};return stems[(map[ds]+idx)%10]}
+function getHourPillarAccurate(dp,h){const b=getHourBranchByHour(h);return getHourStem(dp[0],b)+b}
+function countElements(p){let s={목:0,화:0,토:0,금:0,수:0};p.forEach(x=>{s[elementMap[x[0]]]++;s[branchElements[x[1]]]++});return s}
+function elementBalanceText(s){const e=Object.entries(s).sort((a,b)=>b[1]-a[1]),strong=e[0][0],weak=e[e.length-1][0];let t=`오행 비율은 목 ${s.목}, 화 ${s.화}, 토 ${s.토}, 금 ${s.금}, 수 ${s.수}입니다.<br>강한 오행은 ${strong}, 부족한 오행은 ${weak}입니다.<br>`;const msg={목:"목이 부족하면 계획성, 성장성, 장기 목표를 보완하는 것이 좋습니다.",화:"화가 부족하면 표현력, 자신감, 대외활동을 보완하는 것이 좋습니다.",토:"토가 부족하면 안정감, 꾸준함, 현실적인 기반을 보완하는 것이 좋습니다.",금:"금이 부족하면 판단력, 정리력, 원칙성을 보완하는 것이 좋습니다.",수:"수가 부족하면 정보력, 유연성, 학습과 분석을 보완하는 것이 좋습니다."};return t+msg[weak]}
+function relationElement(d,o){const a=elementCycle.indexOf(d),b=elementCycle.indexOf(o);if(a===b)return"비견/겁재";if((a+1)%5===b)return"식상";if((a+2)%5===b)return"재성";if((a+3)%5===b)return"관성";return"인성"}
+function tenGodSummary(ds,p){const de=elementMap[ds];let c={"비견/겁재":0,식상:0,재성:0,관성:0,인성:0};p.forEach(x=>{if(x[0]!==ds)c[relationElement(de,elementMap[x[0]])]++});const top=Object.entries(c).sort((a,b)=>b[1]-a[1])[0][0],msg={"비견/겁재":"자기주장, 독립성, 경쟁심이 강한 구조입니다.",식상:"표현력, 기술력, 콘텐츠·생산 능력이 강한 구조입니다.",재성:"돈, 현실감각, 사업성, 결과 중심 성향이 강한 구조입니다.",관성:"직장운, 책임감, 조직 적응력, 명예운이 중요한 구조입니다.",인성:"학습, 자격증, 문서, 보호받는 운이 중요한 구조입니다."};return `십신 기초 흐름은 ${top} 기운이 비교적 두드러집니다.<br>${msg[top]}`}
+function nameElement(n){if(!n)return"정보 없음";let s={목:0,화:0,토:0,금:0,수:0};for(let ch of n){let m=ch.charCodeAt(0)%5;if(m===0)s.목++;if(m===1)s.화++;if(m===2)s.토++;if(m===3)s.금++;if(m===4)s.수++}return Object.keys(s).reduce((a,b)=>s[a]>s[b]?a:b)}
+function calendarText(){if(calendarType.value==="solar")return"생년월일은 양력 기준으로 계산했습니다.";if(calendarType.value==="lunar")return"음력은 자동 변환이 없어 양력 변환 후 입력하는 것을 권장합니다.";return"양력 기준으로 임시 계산했습니다."}
+function genderText(){if(gender.value==="male")return"남성 기준의 사회적 역할, 직업운, 활동성 해석을 참고했습니다.";if(gender.value==="female")return"여성 기준의 관계운, 직업운, 생활 흐름 해석을 참고했습니다.";return"성별 기반 해석은 제외했습니다."}
+function faceText(){const f=forehead.value,e=eyes.value,n=nose.value,m=mouth.value;let t=[];if(f==="wide")t.push("넓은 이마는 계획성, 학습운, 초년운이 좋은 흐름으로 봅니다.");if(f==="normal")t.push("보통 이마는 현실감각과 판단력이 안정적인 흐름으로 봅니다.");if(f==="narrow")t.push("좁은 이마는 빠른 실행력과 현장 감각이 강한 타입으로 봅니다.");if(e==="clear")t.push("또렷한 눈매는 집중력과 자기표현력이 좋은 인상입니다.");if(e==="soft")t.push("부드러운 눈매는 친화력과 배려심이 강한 인상입니다.");if(e==="sharp")t.push("날카로운 눈매는 판단력과 승부욕이 강한 인상입니다.");if(n==="straight")t.push("곧은 코는 책임감과 중심이 잡힌 재물운 흐름으로 봅니다.");if(n==="round")t.push("둥근 코는 사람복과 현실적인 재물 감각을 의미합니다.");if(n==="small")t.push("작은 코는 세밀함과 신중함이 강한 타입으로 봅니다.");if(m==="balanced")t.push("균형 있는 입매는 말과 행동의 균형감이 좋은 편입니다.");if(m==="up")t.push("올라간 입꼬리는 긍정적인 인상과 대인운이 좋은 흐름입니다.");if(m==="down")t.push("내려간 입꼬리는 신중하고 책임감 있는 인상입니다.");return t.join("<br>")}
+function palmText(){let t=[];if(lifeLine.value==="deep")t.push("생명선이 선명해 기본 체력과 회복력이 좋은 타입입니다.");if(lifeLine.value==="light")t.push("생명선이 연해 컨디션 관리와 생활 리듬이 중요합니다.");if(lifeLine.value==="broken")t.push("생명선 끊김은 변화나 전환점이 생기기 쉬운 흐름으로 봅니다.");if(headLine.value==="straight")t.push("두뇌선이 곧아 현실적이고 판단이 빠른 성향입니다.");if(headLine.value==="curved")t.push("두뇌선이 휘어 상상력과 감성이 강한 성향입니다.");if(headLine.value==="short")t.push("두뇌선이 짧아 빠른 결단과 행동력이 장점입니다.");if(heartLine.value==="clear")t.push("감정선이 균형 있어 대인관계와 감정 표현이 안정적입니다.");if(heartLine.value==="chain")t.push("감정선에 잔선이 많아 감수성이 예민하고 생각이 많은 편입니다.");if(heartLine.value==="short")t.push("감정선이 짧아 감정보다 현실 판단을 우선하는 경향이 있습니다.");if(fateLine.value==="strong")t.push("운명선이 뚜렷해 목표의식과 직업운이 강한 타입입니다.");if(fateLine.value==="weak")t.push("운명선이 흐려 다양한 경험 속에서 방향을 잡는 타입입니다.");if(fateLine.value==="none")t.push("운명선이 잘 보이지 않아 자유로운 선택이 중요한 타입입니다.");return t.join("<br>")}
+function extraInfoText(){let t=[];const b=bloodType.value,m=mbti.value,j=jobType.value,d=jobDetail.value.trim();if(b==="unknown")t.push("혈액형 해석은 제외했습니다.");else t.push(`${b}형 성향은 사주 해석에 보조 참고 요소로 반영했습니다.`);if(m==="unknown")t.push("MBTI 해석은 제외했습니다.");else t.push(`MBTI ${m} 기준 성향을 함께 참고했습니다.`);if(j==="college")t.push(`대학생(${d||"학과 미입력"}) 기준으로 전공 적성과 진로 방향을 참고했습니다.`);else if(j!=="unknown")t.push(`직장/하는 일(${d||"상세 미입력"}) 기준으로 직업 적성을 참고했습니다.`);else t.push("직업 정보는 제외했습니다.");return t.join("<br>")}
+function combinedAnalysis(main,blood,mbti,job,detail){let j=detail||"입력한 직업/분야",t=[];t.push("<h3>1. 전체 성향 종합</h3>");t.push({목:"성장과 확장을 중요하게 보는 구조입니다. 목표를 세우고 단계적으로 발전할 때 강점이 커집니다.",화:"표현력과 활동성이 강한 구조입니다. 사람 앞에서 능력을 보여주는 환경에서 힘이 살아납니다.",토:"안정감, 책임감, 현실 감각이 중심입니다. 조직 안에서 신뢰를 쌓고 기반을 다질수록 운이 강해집니다.",금:"판단력, 결단력, 원칙성이 중심입니다. 관리, 기술, 분석, 규정이 중요한 분야에서 강점이 있습니다.",수:"분석력, 유연성, 정보력이 중심입니다. 기획, 상담, 연구, 데이터 흐름과 잘 맞습니다."}[main]);t.push("<h3>2. 직장·하는 일 적성</h3>");if(job==="college")t.push(`현재 학과(${j})는 꾸준히 실력을 쌓아 인정받는 흐름이 중요합니다.`);else if(job==="unknown")t.push("구체 직업 정보가 없어 사주 중심 오행 기준으로만 해석했습니다.");else t.push(`현재 직장/하는 일(${j})은 책임, 관리, 조율, 결과가 중요한 역할에서 강점이 살아날 가능성이 큽니다.`);t.push("<h3>3. 재물운·투자 성향</h3>");if(main==="토"||main==="금")t.push("안정형 투자자 성향입니다. 예금, 배당주, 우량주 장기투자, 부동산처럼 구조가 명확한 방식이 잘 맞습니다.");else if(main==="화")t.push("공격형 기질이 있으므로 상승 흐름을 빠르게 타지만 손절 기준과 분할 원칙이 반드시 필요합니다.");else if(main==="수")t.push("분석형 투자자 성향입니다. 뉴스, 실적, 시장 흐름을 보고 판단하는 데 강점이 있습니다.");else t.push("성장형 투자자 성향입니다. 미래 산업과 장기 프로젝트에 관심이 가기 쉽지만 실적 확인이 중요합니다.");t.push("<h3>4. 인간관계·대인운</h3>");if(mbti!=="unknown"&&mbti[0]==="E")t.push("사람과의 접점에서 기회가 생기기 쉽지만 관계 피로를 조절해야 합니다.");else if(mbti!=="unknown"&&mbti[0]==="I")t.push("깊고 오래가는 관계에서 안정감이 커집니다. 신뢰할 수 있는 소수와의 관계가 중요합니다.");else t.push("본인의 강한 기질이 관계 방식에 그대로 드러나는 편입니다. 장점은 살리고 과한 부분은 조절하는 것이 좋습니다.");return t.join("<br><br>")}
+function getPlainResult(){return result.style.display==="none"?"":result.innerText.trim()}function copyResult(){const t=getPlainResult();if(!t)return alert("먼저 종합 풀이를 실행해주세요.");navigator.clipboard.writeText(t).then(()=>alert("결과가 복사되었습니다."))}function shareResult(){const t=getPlainResult();if(!t)return alert("먼저 종합 풀이를 실행해주세요.");if(navigator.share)navigator.share({title:"나의 사주 종합 풀이",text:t});else copyResult()}
+function calc(){const y=+year.value,m=+month.value,d=+day.value,h=+hour.value,nm=name.value;if(!y||!m||!d)return alert("생년월일을 입력해주세요.");if(!privacyAgree.checked)return alert("개인정보 수집 및 이용 동의가 필요합니다.");let yp=getYearPillarByIpchun(y,m,d),mp=getMonthPillarAccurate(y,m,d,yp),dp=getDayPillarAccurate(y,m,d),hp=getHourPillarAccurate(dp,h),pillars=[yp,mp,dp,hp],score=countElements(pillars),main=elementMap[dp[0]],nameEl=nameElement(nm),synergy=main===nameEl?"사주 중심 오행과 이름 오행이 비슷해 자기 색깔이 강한 편입니다.":"사주 중심 오행과 이름 오행이 달라 보완적인 흐름으로 볼 수 있습니다.";result.style.display="block";result.innerHTML=`<h2>종합 풀이 결과</h2><b>년주:</b> ${yp} / <b>월주:</b> ${mp} / <b>일주:</b> ${dp} / <b>시주:</b> ${hp}<br><b>입력 기준:</b> ${calendarText()}<br><b>성별 반영:</b> ${genderText()}<br><b>사주 중심 오행:</b> ${main}<br><b>기본 성향:</b> ${elementText[main]}<br><br><h3>오행 균형 분석</h3>${elementBalanceText(score)}<br><br><h3>십신 기초 분석</h3>${tenGodSummary(dp[0],pillars)}<br><br><h3>추가 성향 풀이</h3>${extraInfoText()}<br><br><h3>이름 풀이</h3><b>이름 오행:</b> ${nameEl}<br>${synergy}<br><br><h3>관상 풀이</h3>${faceText()}<br><br><h3>손금 풀이</h3>${palmText()}<br><br><h3>종합 분석</h3>${combinedAnalysis(main,bloodType.value,mbti.value,jobType.value,jobDetail.value)}<br><br><h3>종합 조언</h3>사주는 타고난 기질, 이름은 보완 에너지, 관상은 외적 인상과 사회적 흐름, 손금은 현재 성향과 생활 흐름을 보는 참고 요소로 활용하면 좋습니다.`}
 </script>
-
 </body>
 </html>
