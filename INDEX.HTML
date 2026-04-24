@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>사주·이름·손금 간단 풀이 프로그램</title>
+  <style>
+    body {font-family: Arial, sans-serif; background:#f5f7fb; padding:30px; color:#222;}
+    .container {max-width:860px; margin:auto; background:#fff; padding:28px; border-radius:18px; box-shadow:0 10px 25px rgba(0,0,0,0.08);} 
+    h1,h2 {text-align:center;}
+    label {display:block; margin-top:14px; font-weight:bold;}
+    input, select, button {width:100%; padding:12px; margin-top:8px; border-radius:10px; border:1px solid #ddd; box-sizing:border-box; font-size:15px;}
+    button {background:#2f6fed; color:#fff; font-weight:bold; cursor:pointer; margin-top:22px; border:none;}
+    button:hover {background:#1f57c8;}
+    .grid {display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+    .result {margin-top:24px; padding:20px; background:#f0f4ff; border-radius:14px; line-height:1.8;}
+    .card {background:#fafafa; padding:15px; border-radius:12px; border:1px solid #eee; margin-top:16px;}
+    .preview {max-width:100%; margin-top:10px; border-radius:12px; display:none; border:1px solid #ddd;}
+    .notice {font-size:13px; color:#777; line-height:1.6; margin-top:18px;}
+    @media(max-width:700px){.grid{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>사주·이름·손금 간단 풀이</h1>
+  <p class="notice" style="text-align:center;">생년월일시, 한자 이름, 왼손·오른손 손금 정보를 함께 넣어 간단 풀이를 보여줍니다.</p>
+
+  <div class="card">
+    <h2>1. 기본 정보</h2>
+    <label>이름 (한자)</label>
+    <input id="name" placeholder="예: 金東洙">
+
+    <div class="grid">
+      <div>
+        <label>태어난 연도</label>
+        <input id="year" type="number" placeholder="예: 1990">
+      </div>
+      <div>
+        <label>태어난 월</label>
+        <input id="month" type="number" placeholder="예: 5">
+      </div>
+      <div>
+        <label>태어난 일</label>
+        <input id="day" type="number" placeholder="예: 20">
+      </div>
+      <div>
+        <label>태어난 시간</label>
+        <select id="hour">
+          <option value="0">자시 23:00~01:00</option>
+          <option value="2">축시 01:00~03:00</option>
+          <option value="4">인시 03:00~05:00</option>
+          <option value="6">묘시 05:00~07:00</option>
+          <option value="8">진시 07:00~09:00</option>
+          <option value="10">사시 09:00~11:00</option>
+          <option value="12">오시 11:00~13:00</option>
+          <option value="14">미시 13:00~15:00</option>
+          <option value="16">신시 15:00~17:00</option>
+          <option value="18">유시 17:00~19:00</option>
+          <option value="20">술시 19:00~21:00</option>
+          <option value="22">해시 21:00~23:00</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>2. 손금 사진 업로드</h2>
+    <div class="grid">
+      <div>
+        <label>왼손 사진</label>
+        <input type="file" id="leftPalm" accept="image/*" onchange="previewImage(this,'leftPreview')">
+        <img id="leftPreview" class="preview">
+      </div>
+      <div>
+        <label>오른손 사진</label>
+        <input type="file" id="rightPalm" accept="image/*" onchange="previewImage(this,'rightPreview')">
+        <img id="rightPreview" class="preview">
+      </div>
+    </div>
+    <p class="notice">※ 현재 버전은 손금 사진을 저장하지 않고 화면 미리보기만 합니다. 자동 판독 AI 없이 간단 풀이용 체크 항목을 함께 사용합니다.</p>
+  </div>
+
+  <div class="card">
+    <h2>3. 얼굴 사진 업로드</h2>
+    <label>얼굴 정면 사진</label>
+    <input type="file" id="facePhoto" accept="image/*" onchange="previewImage(this,'facePreview')">
+    <img id="facePreview" class="preview">
+    <p class="notice">※ 얼굴 사진은 저장하지 않고 화면 미리보기만 합니다. 현재 버전은 자동 관상 판독이 아니라 사용자가 특징을 선택하는 방식입니다.</p>
+  </div>
+
+  <div class="card">
+    <h2>4. 관상 체크</h2>
+    <label>이마 형태</label>
+    <select id="forehead">
+      <option value="wide">넓은 편</option>
+      <option value="normal">보통</option>
+      <option value="narrow">좁은 편</option>
+    </select>
+
+    <label>눈매 느낌</label>
+    <select id="eyes">
+      <option value="clear">맑고 또렷함</option>
+      <option value="soft">부드러운 인상</option>
+      <option value="sharp">날카로운 인상</option>
+    </select>
+
+    <label>코 형태</label>
+    <select id="nose">
+      <option value="straight">곧은 편</option>
+      <option value="round">둥근 편</option>
+      <option value="small">작은 편</option>
+    </select>
+
+    <label>입매 느낌</label>
+    <select id="mouth">
+      <option value="balanced">균형 있음</option>
+      <option value="up">입꼬리가 올라간 편</option>
+      <option value="down">입꼬리가 내려간 편</option>
+    </select>
+  </div>
+
+  <div class="card">
+    <h2>5. 손금 체크</h2>
+    <label>생명선 상태</label>
+    <select id="lifeLine">
+      <option value="deep">깊고 선명함</option>
+      <option value="light">연하고 흐림</option>
+      <option value="broken">중간에 끊김이 있음</option>
+    </select>
+
+    <label>두뇌선 상태</label>
+    <select id="headLine">
+      <option value="straight">곧고 길게 뻗음</option>
+      <option value="curved">아래로 휘어짐</option>
+      <option value="short">짧은 편</option>
+    </select>
+
+    <label>감정선 상태</label>
+    <select id="heartLine">
+      <option value="clear">선명하고 균형 있음</option>
+      <option value="chain">잔선이 많음</option>
+      <option value="short">짧은 편</option>
+    </select>
+
+    <label>운명선 상태</label>
+    <select id="fateLine">
+      <option value="strong">뚜렷함</option>
+      <option value="weak">약하거나 흐림</option>
+      <option value="none">잘 보이지 않음</option>
+    </select>
+  </div>
+
+  <button onclick="calc()">종합 풀이 보기</button>
+
+  <div id="result" class="result" style="display:none"></div>
+
+  <p class="notice">
+    ※ 이 프로그램은 재미와 참고용입니다. 실제 사주명리학은 절기, 음력/양력, 지역 시간, 만세력 계산이 필요하며, 손금 역시 사진 판독 AI나 전문가 해석과 차이가 있을 수 있습니다.
+  </p>
+</div>
+
+<script>
+const stems=["갑","을","병","정","무","기","경","신","임","계"];
+const branches=["자","축","인","묘","진","사","오","미","신","유","술","해"];
+const elementMap={"갑":"목","을":"목","병":"화","정":"화","무":"토","기":"토","경":"금","신":"금","임":"수","계":"수"};
+const elementText={
+  목:"성장, 계획, 추진력이 강한 타입입니다.",
+  화:"표현력, 열정, 인기운이 강한 타입입니다.",
+  토:"안정감, 책임감, 현실감각이 강한 타입입니다.",
+  금:"판단력, 결단력, 원칙성이 강한 타입입니다.",
+  수:"지혜, 유연함, 분석력이 강한 타입입니다."
+};
+
+function getPillar(n){return stems[((n%10)+10)%10]+branches[((n%12)+12)%12];}
+
+function nameElement(name){
+  if(!name) return "정보 없음";
+  let score={목:0,화:0,토:0,금:0,수:0};
+  for(let ch of name){
+    let code=ch.charCodeAt(0);
+    let mod=code%5;
+    if(mod===0) score.목++;
+    if(mod===1) score.화++;
+    if(mod===2) score.토++;
+    if(mod===3) score.금++;
+    if(mod===4) score.수++;
+  }
+  return Object.keys(score).reduce((a,b)=>score[a]>score[b]?a:b);
+}
+
+function previewImage(input, targetId){
+  const file=input.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const img=document.getElementById(targetId);
+    img.src=e.target.result;
+    img.style.display="block";
+  };
+  reader.readAsDataURL(file);
+}
+
+function faceText(){
+  let forehead=document.getElementById("forehead").value;
+  let eyes=document.getElementById("eyes").value;
+  let nose=document.getElementById("nose").value;
+  let mouth=document.getElementById("mouth").value;
+
+  let txt=[];
+  if(forehead==="wide") txt.push("이마가 넓은 편이면 계획성, 학습운, 초년운이 좋은 흐름으로 해석할 수 있습니다.");
+  if(forehead==="normal") txt.push("이마가 균형 있는 편이면 현실감각과 판단력이 안정적인 흐름으로 봅니다.");
+  if(forehead==="narrow") txt.push("이마가 좁은 편이면 빠른 실행력과 현장 감각이 강한 타입으로 해석할 수 있습니다.");
+
+  if(eyes==="clear") txt.push("눈매가 또렷하면 집중력과 자기표현력이 좋은 인상으로 봅니다.");
+  if(eyes==="soft") txt.push("눈매가 부드러우면 대인관계에서 친화력과 배려심이 강한 인상으로 봅니다.");
+  if(eyes==="sharp") txt.push("눈매가 날카로운 편이면 판단력과 승부욕이 강한 인상으로 해석할 수 있습니다.");
+
+  if(nose==="straight") txt.push("코가 곧은 편이면 책임감과 중심이 잡힌 재물운 흐름으로 봅니다.");
+  if(nose==="round") txt.push("코가 둥근 편이면 사람복과 현실적인 재물 감각이 있는 인상으로 해석합니다.");
+  if(nose==="small") txt.push("코가 작은 편이면 세밀함과 신중함이 강한 타입으로 볼 수 있습니다.");
+
+  if(mouth==="balanced") txt.push("입매가 균형 있으면 말과 행동의 균형감이 좋은 편으로 봅니다.");
+  if(mouth==="up") txt.push("입꼬리가 올라간 편이면 긍정적인 인상과 대인운이 좋은 흐름으로 해석합니다.");
+  if(mouth==="down") txt.push("입꼬리가 내려간 편이면 신중하고 책임감 있는 인상으로 볼 수 있습니다.");
+
+  return txt.join("<br>");
+}
+
+function palmText(){
+  let life=document.getElementById("lifeLine").value;
+  let head=document.getElementById("headLine").value;
+  let heart=document.getElementById("heartLine").value;
+  let fate=document.getElementById("fateLine").value;
+
+  let txt=[];
+  if(life==="deep") txt.push("생명선이 선명한 편이라 기본 체력과 회복력이 좋은 타입으로 볼 수 있습니다.");
+  if(life==="light") txt.push("생명선이 연한 편이라 컨디션 관리와 꾸준한 생활 리듬이 중요합니다.");
+  if(life==="broken") txt.push("생명선에 끊김이 있다면 인생 중 변화나 전환점이 생기기 쉬운 흐름으로 해석할 수 있습니다.");
+
+  if(head==="straight") txt.push("두뇌선이 곧은 편이라 현실적이고 판단이 빠른 성향입니다.");
+  if(head==="curved") txt.push("두뇌선이 아래로 휘면 상상력과 감성이 강한 성향으로 봅니다.");
+  if(head==="short") txt.push("두뇌선이 짧은 편이면 빠른 결단과 행동력이 장점입니다.");
+
+  if(heart==="clear") txt.push("감정선이 균형 있으면 대인관계와 감정 표현이 안정적인 편입니다.");
+  if(heart==="chain") txt.push("감정선에 잔선이 많으면 감수성이 예민하고 생각이 많은 편입니다.");
+  if(heart==="short") txt.push("감정선이 짧으면 감정보다 현실 판단을 우선하는 경향이 있습니다.");
+
+  if(fate==="strong") txt.push("운명선이 뚜렷하면 목표의식과 직업운이 강한 타입으로 해석합니다.");
+  if(fate==="weak") txt.push("운명선이 흐리면 한 길보다 다양한 경험을 통해 방향을 잡는 타입입니다.");
+  if(fate==="none") txt.push("운명선이 잘 보이지 않으면 정해진 틀보다 자유로운 선택이 중요한 타입입니다.");
+
+  return txt.join("<br>");
+}
+
+function calc(){
+  let y=+document.getElementById("year").value;
+  let m=+document.getElementById("month").value;
+  let d=+document.getElementById("day").value;
+  let h=+document.getElementById("hour").value;
+  let nm=document.getElementById("name").value;
+
+  if(!y||!m||!d){alert("생년월일을 입력해주세요.");return;}
+
+  let yearP=getPillar(y-4);
+  let monthP=getPillar((y*12+m)%60);
+  let dayP=getPillar(Math.floor(new Date(y,m-1,d).getTime()/86400000)+40);
+  let hourP=getPillar((d+h)%60);
+
+  let main=elementMap[dayP[0]];
+  let nameEl=nameElement(nm);
+  let synergy=main===nameEl ? "사주 중심 오행과 이름 오행이 비슷해 자기 색깔이 강한 편입니다." : "사주 중심 오행과 이름 오행이 달라 보완적인 흐름으로 볼 수 있습니다.";
+
+  let hasFace=document.getElementById("facePhoto").files.length>0;
+  let hasLeft=document.getElementById("leftPalm").files.length>0;
+  let hasRight=document.getElementById("rightPalm").files.length>0;
+
+  const result=document.getElementById("result");
+  result.style.display="block";
+  result.innerHTML=`
+    <h2>종합 풀이 결과</h2>
+    <b>년주:</b> ${yearP} / <b>월주:</b> ${monthP} / <b>일주:</b> ${dayP} / <b>시주:</b> ${hourP}<br>
+    <b>사주 중심 오행:</b> ${main}<br>
+    <b>기본 성향:</b> ${elementText[main]}<br><br>
+
+    <h3>이름 풀이</h3>
+    <b>이름 오행:</b> ${nameEl}<br>
+    ${synergy}<br><br>
+
+    <h3>관상 풀이</h3>
+    <b>얼굴 사진:</b> ${hasFace ? "업로드됨" : "미업로드"}<br><br>
+    ${faceText()}<br><br>
+
+    <h3>손금 풀이</h3>
+    <b>왼손 사진:</b> ${hasLeft ? "업로드됨" : "미업로드"}<br>
+    <b>오른손 사진:</b> ${hasRight ? "업로드됨" : "미업로드"}<br><br>
+    ${palmText()}<br><br>
+
+    <h3>종합 조언</h3>
+    사주는 타고난 기질, 이름은 보완 에너지, 관상은 외적 인상과 사회적 흐름, 손금은 현재 성향과 생활 흐름을 보는 참고 요소로 활용하면 좋습니다.
+  `;
+}
+</script>
+</body>
+</html>
