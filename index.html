@@ -45,7 +45,7 @@ body{margin:0;font-family:Arial,'Noto Sans KR',sans-serif;background:linear-grad
   <section class="section">
     <div class="section-title"><div class="icon">🧭</div><div><h2>기본 정보</h2><p class="section-desc">사주 계산에 필요한 정보를 입력하세요.</p></div></div>
     <div class="form-grid">
-      <div class="field"><label>이름 (한자)</label><input id="name" placeholder="예: 金東洙"></div>
+      <div class="field"><label>이름 (한글)</label><input id="name" placeholder="예: 홍길동" maxlength="10"><p style="margin:6px 0 0;color:#6b7280;font-size:12px;">※ 한자 없이 한글 이름의 초성·모음·받침 흐름을 참고해 보조 분석합니다.</p></div>
       <div class="field"><label>성별</label><select id="gender"><option value="unknown">선택 안 함</option><option value="male">남성</option><option value="female">여성</option></select></div>
     </div>
     <div class="form-grid" style="margin-top:16px">
@@ -136,7 +136,42 @@ function countElements(p){let s={목:0,화:0,토:0,금:0,수:0};p.forEach(x=>{s[
 function elementBalanceText(s){const e=Object.entries(s).sort((a,b)=>b[1]-a[1]),strong=e[0][0],weak=e[e.length-1][0];const msg={목:"목이 부족하면 계획성, 성장성, 장기 목표를 보완하는 것이 좋습니다.",화:"화가 부족하면 표현력, 자신감, 대외활동을 보완하는 것이 좋습니다.",토:"토가 부족하면 안정감, 꾸준함, 현실적인 기반을 보완하는 것이 좋습니다.",금:"금이 부족하면 판단력, 정리력, 원칙성을 보완하는 것이 좋습니다.",수:"수가 부족하면 정보력, 유연성, 학습과 분석을 보완하는 것이 좋습니다."};return `오행 비율은 목 ${s.목}, 화 ${s.화}, 토 ${s.토}, 금 ${s.금}, 수 ${s.수}입니다.<br>강한 오행은 ${strong}, 부족한 오행은 ${weak}입니다.<br>${msg[weak]}`}
 function relationElement(d,o){const a=elementCycle.indexOf(d),b=elementCycle.indexOf(o);if(a===b)return"비견/겁재";if((a+1)%5===b)return"식상";if((a+2)%5===b)return"재성";if((a+3)%5===b)return"관성";return"인성"}
 function tenGodSummary(ds,p){const de=elementMap[ds];let c={"비견/겁재":0,식상:0,재성:0,관성:0,인성:0};p.forEach(x=>{if(x[0]!==ds)c[relationElement(de,elementMap[x[0]])]++});const top=Object.entries(c).sort((a,b)=>b[1]-a[1])[0][0],msg={"비견/겁재":"자기주장, 독립성, 경쟁심이 강한 구조입니다.",식상:"표현력, 기술력, 콘텐츠·생산 능력이 강한 구조입니다.",재성:"돈, 현실감각, 사업성, 결과 중심 성향이 강한 구조입니다.",관성:"직장운, 책임감, 조직 적응력, 명예운이 중요한 구조입니다.",인성:"학습, 자격증, 문서, 보호받는 운이 중요한 구조입니다."};return `십신 기초 흐름은 ${top} 기운이 비교적 두드러집니다.<br>${msg[top]}`}
-function nameElement(n){if(!n)return"정보 없음";let s={목:0,화:0,토:0,금:0,수:0};for(let ch of n){let m=ch.charCodeAt(0)%5;if(m===0)s.목++;if(m===1)s.화++;if(m===2)s.토++;if(m===3)s.금++;if(m===4)s.수++}return Object.keys(s).reduce((a,b)=>s[a]>s[b]?a:b)}
+function analyzeKoreanName(n){
+  if(!n || !n.trim()) return {summary:"이름을 입력하지 않아 이름 성향 분석은 제외했습니다.", element:"정보 없음"};
+  n=n.trim().split(" ").join("");
+  const choseong=["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
+  const jungseong=["ㅏ","ㅐ","ㅑ","ㅒ","ㅓ","ㅔ","ㅕ","ㅖ","ㅗ","ㅘ","ㅙ","ㅚ","ㅛ","ㅜ","ㅝ","ㅞ","ㅟ","ㅠ","ㅡ","ㅢ","ㅣ"];
+  const jongseong=["","ㄱ","ㄲ","ㄳ","ㄴ","ㄵ","ㄶ","ㄷ","ㄹ","ㄺ","ㄻ","ㄼ","ㄽ","ㄾ","ㄿ","ㅀ","ㅁ","ㅂ","ㅄ","ㅅ","ㅆ","ㅇ","ㅈ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
+  const elemMap={"ㄱ":"목","ㄲ":"목","ㅋ":"목","ㄴ":"화","ㄷ":"화","ㄸ":"화","ㄹ":"화","ㅌ":"화","ㅇ":"토","ㅎ":"토","ㅅ":"금","ㅆ":"금","ㅈ":"금","ㅉ":"금","ㅊ":"금","ㅁ":"수","ㅂ":"수","ㅃ":"수","ㅍ":"수"};
+  let score={목:0,화:0,토:0,금:0,수:0};
+  let initials=[], finals=[];
+  for(let ch of n){
+    const code=ch.charCodeAt(0)-44032;
+    if(code<0 || code>11171) continue;
+    const cho=Math.floor(code/588);
+    const jung=Math.floor((code%588)/28);
+    const jong=code%28;
+    const c=choseong[cho], v=jungseong[jung], f=jongseong[jong];
+    initials.push(c); if(f) finals.push(f);
+    if(elemMap[c]) score[elemMap[c]] += 2;
+    if(f && elemMap[f]) score[elemMap[f]] += 1;
+    if(["ㅏ","ㅑ","ㅗ","ㅛ"].includes(v)) score.화 += 1;
+    else if(["ㅓ","ㅕ","ㅜ","ㅠ"].includes(v)) score.수 += 1;
+    else if(["ㅡ","ㅢ"].includes(v)) score.토 += 1;
+    else if(["ㅣ"].includes(v)) score.목 += 1;
+    else score.금 += 1;
+  }
+  const top=Object.entries(score).sort((a,b)=>b[1]-a[1])[0][0];
+  const first=initials[0]||"";
+  let firstText="";
+  if(["ㄱ","ㄲ","ㅋ"].includes(first)) firstText="첫소리가 목 기운이라 시작력, 성장 욕구, 추진성이 강한 이름 흐름입니다.";
+  else if(["ㄴ","ㄷ","ㄸ","ㄹ","ㅌ"].includes(first)) firstText="첫소리가 화 기운이라 표현력, 활동성, 사람 앞에서 드러나는 힘이 있는 이름 흐름입니다.";
+  else if(["ㅇ","ㅎ"].includes(first)) firstText="첫소리가 토 기운이라 안정감, 신뢰, 중심을 잡는 힘이 있는 이름 흐름입니다.";
+  else if(["ㅅ","ㅆ","ㅈ","ㅉ","ㅊ"].includes(first)) firstText="첫소리가 금 기운이라 판단력, 정리력, 원칙성이 돋보이는 이름 흐름입니다.";
+  else if(["ㅁ","ㅂ","ㅃ","ㅍ"].includes(first)) firstText="첫소리가 수 기운이라 유연함, 정보력, 현실 감각이 살아나는 이름 흐름입니다.";
+  const finalText=finals.length>=2 ? "받침이 비교적 많은 이름이라 신중함, 책임감, 마무리 힘이 강하게 느껴집니다." : "받침이 적거나 부드러운 이름이라 대인관계에서 편안하고 부드러운 인상을 주기 쉽습니다.";
+  return {summary:"한글 이름 '"+n+"'은 초성·모음·받침 흐름 기준으로 "+top+" 기운이 비교적 강하게 나타납니다.<br>"+firstText+"<br>"+finalText, element:top};
+}
 function calendarText(){if(calendarType.value==="solar")return"생년월일은 양력 기준으로 계산했습니다.";if(calendarType.value==="lunar")return"음력으로 선택하셨습니다. 현재 버전은 음력 자동 변환이 없어 양력 변환 후 입력하는 것을 권장합니다.";return"양력 기준으로 임시 계산했습니다."}
 function genderText(){if(gender.value==="male")return"남성 기준의 사회적 역할, 직업운, 활동성 해석을 참고했습니다.";if(gender.value==="female")return"여성 기준의 관계운, 직업운, 생활 흐름 해석을 참고했습니다.";return"성별 기반 해석은 제외했습니다."}
 function faceText(){let t=[];if(forehead.value==="wide")t.push("넓은 이마는 계획성, 학습운, 초년운이 좋은 흐름입니다.");if(forehead.value==="normal")t.push("보통 이마는 현실감각과 판단력이 안정적인 흐름입니다.");if(forehead.value==="narrow")t.push("좁은 이마는 빠른 실행력과 현장 감각이 강한 타입입니다.");if(eyes.value==="clear")t.push("또렷한 눈매는 집중력과 자기표현력이 좋은 인상입니다.");if(eyes.value==="soft")t.push("부드러운 눈매는 친화력과 배려심이 강한 인상입니다.");if(eyes.value==="sharp")t.push("날카로운 눈매는 판단력과 승부욕이 강한 인상입니다.");if(nose.value==="straight")t.push("곧은 코는 책임감과 중심이 잡힌 재물운 흐름입니다.");if(nose.value==="round")t.push("둥근 코는 사람복과 현실적인 재물 감각을 의미합니다.");if(nose.value==="small")t.push("작은 코는 세밀함과 신중함이 강한 타입입니다.");if(mouth.value==="balanced")t.push("균형 있는 입매는 말과 행동의 균형감이 좋은 편입니다.");if(mouth.value==="up")t.push("보통 입술은 중립적이고 무난한 대인 흐름으로 봅니다.");if(mouth.value==="down")t.push("얇은 입술은 이성적이고 표현을 조절하는 성향으로 봅니다.");if(jaw.value==="round")t.push("둥근 턱은 친화력과 안정감이 좋은 흐름입니다.");if(jaw.value==="square")t.push("각진 턱은 의지력, 책임감, 버티는 힘이 강한 인상입니다.");if(jaw.value==="sharp")t.push("뾰족한 턱은 섬세함, 감각, 예민한 판단력이 강한 인상입니다.");return t.join("<br>")}
@@ -144,7 +179,7 @@ function palmText(){let t=[];if(lifeLine.value==="deep")t.push("생명선이 선
 function extraInfoText(){let t=[];const b=bloodType.value,m=mbti.value,j=jobType.value,d=jobDetail.value.trim();if(b==="unknown")t.push("혈액형 해석은 제외했습니다.");else t.push(`${b}형 성향은 사주 해석에 보조 참고 요소로 반영했습니다.`);if(m==="unknown")t.push("MBTI 해석은 제외했습니다.");else t.push(`MBTI ${m} 기준 성향을 함께 참고했습니다.`);if(j==="college")t.push(`대학생(${d||"학과 미입력"}) 기준으로 전공 적성과 진로 방향을 참고했습니다.`);else if(j==="highschool")t.push(`고등학생(${d||"계열 미입력"}) 기준으로 학업 방향과 진로 선택을 참고했습니다.`);else if(j!=="unknown")t.push(`직장/하는 일(${d||"상세 미입력"}) 기준으로 직업 적성을 참고했습니다.`);else t.push("직업 정보는 제외했습니다.");return t.join("<br>")}
 function combinedAnalysis(main,blood,mbtiVal,job,detail){let j=detail||"입력한 직업/분야",t=[];t.push("<h3>1. 전체 성향 종합</h3>");t.push({목:"성장과 확장을 중요하게 보는 구조입니다. 목표를 세우고 단계적으로 발전할 때 강점이 커집니다.",화:"표현력과 활동성이 강한 구조입니다. 사람 앞에서 능력을 보여주는 환경에서 힘이 살아납니다.",토:"안정감, 책임감, 현실 감각이 중심입니다. 조직 안에서 신뢰를 쌓고 기반을 다질수록 운이 강해집니다.",금:"판단력, 결단력, 원칙성이 중심입니다. 관리, 기술, 분석, 규정이 중요한 분야에서 강점이 있습니다.",수:"분석력, 유연성, 정보력이 중심입니다. 기획, 상담, 연구, 데이터 흐름과 잘 맞습니다."}[main]);t.push("<h3>2. 직업·진로 적성</h3>");if(job==="college")t.push(`현재 학과(${j})는 꾸준히 실력을 쌓아 인정받는 흐름이 중요합니다.`);else if(job==="highschool")t.push(`현재 계열(${j})은 학업 방향과 진로 선택의 기준으로 참고할 수 있습니다.`);else if(job==="unknown")t.push("구체 직업 정보가 없어 사주 중심 오행 기준으로만 해석했습니다.");else t.push(`현재 직장/하는 일(${j})은 책임, 관리, 조율, 결과가 중요한 역할에서 강점이 살아날 가능성이 큽니다.`);t.push("<h3>3. 재물운·투자 성향</h3>");if(main==="토"||main==="금")t.push("안정형 투자자 성향입니다. 예금, 배당주, 우량주 장기투자, 부동산처럼 구조가 명확한 방식이 잘 맞습니다.");else if(main==="화")t.push("공격형 기질이 있으므로 상승 흐름을 빠르게 타지만 손절 기준과 분할 원칙이 반드시 필요합니다.");else if(main==="수")t.push("분석형 투자자 성향입니다. 뉴스, 실적, 시장 흐름을 보고 판단하는 데 강점이 있습니다.");else t.push("성장형 투자자 성향입니다. 미래 산업과 장기 프로젝트에 관심이 가기 쉽지만 실적 확인이 중요합니다.");t.push("<h3>4. 인간관계·대인운</h3>");if(mbtiVal!=="unknown"&&mbtiVal[0]==="E")t.push("사람과의 접점에서 기회가 생기기 쉽지만 관계 피로를 조절해야 합니다.");else if(mbtiVal!=="unknown"&&mbtiVal[0]==="I")t.push("깊고 오래가는 관계에서 안정감이 커집니다. 신뢰할 수 있는 소수와의 관계가 중요합니다.");else t.push("본인의 강한 기질이 관계 방식에 그대로 드러나는 편입니다. 장점은 살리고 과한 부분은 조절하는 것이 좋습니다.");return t.join("<br><br>")}
 function getPlainResult(){return result.style.display==="none"?"":result.innerText.trim()}function copyResult(){const t=getPlainResult();if(!t)return alert("먼저 종합 풀이를 실행해주세요.");navigator.clipboard.writeText(t).then(()=>alert("결과가 복사되었습니다."))}function shareResult(){const t=getPlainResult();if(!t)return alert("먼저 종합 풀이를 실행해주세요.");if(navigator.share)navigator.share({title:"나의 사주 종합 리포트",text:t});else copyResult()}
-function calc(){const y=+year.value,m=+month.value,d=+day.value,h=hour.value,nm=name.value;if(!y||!m||!d)return alert("생년월일을 입력해주세요.");if(!privacyAgree.checked)return alert("개인정보 수집 및 이용 동의가 필요합니다.");let yp=getYearPillarByIpchun(y,m,d),mp=getMonthPillarAccurate(y,m,d,yp),dp=getDayPillarAccurate(y,m,d),hp=h==="unknown"?"시간 모름":getHourPillarAccurate(dp,h),pillars=h==="unknown"?[yp,mp,dp]:[yp,mp,dp,hp],score=countElements(pillars),main=elementMap[dp[0]],nameEl=nameElement(nm),synergy=main===nameEl?"사주 중심 오행과 이름 오행이 비슷해 자기 색깔이 강한 편입니다.":"사주 중심 오행과 이름 오행이 달라 보완적인 흐름으로 볼 수 있습니다.";result.style.display="block";result.innerHTML=`<h2>종합 리포트</h2><b>년주:</b> ${yp} / <b>월주:</b> ${mp} / <b>일주:</b> ${dp} / <b>시주:</b> ${hp}<br><b>입력 기준:</b> ${calendarText()}<br><b>성별 반영:</b> ${genderText()}<br><b>사주 중심 오행:</b> ${main}<br><b>기본 성향:</b> ${elementText[main]}<br><br><h3>오행 균형 분석</h3>${elementBalanceText(score)}<br><br><h3>십신 기초 분석</h3>${tenGodSummary(dp[0],pillars)}<br><br><h3>추가 성향 풀이</h3>${extraInfoText()}<br><br><h3>이름 풀이</h3><b>이름 오행:</b> ${nameEl}<br>${synergy}<br><br><h3>관상 풀이</h3>${faceText()}<br><br><h3>손금 풀이</h3>${palmText()}<br><br><h3>종합 분석</h3>${combinedAnalysis(main,bloodType.value,mbti.value,jobType.value,jobDetail.value)}<br><br><h3>종합 조언</h3>사주는 타고난 기질, 이름은 보완 에너지, 관상은 외적 인상과 사회적 흐름, 손금은 현재 성향과 생활 흐름을 보는 참고 요소로 활용하면 좋습니다.`;result.scrollIntoView({behavior:'smooth'})}
+function calc(){const y=+year.value,m=+month.value,d=+day.value,h=hour.value,nm=name.value;if(!y||!m||!d)return alert("생년월일을 입력해주세요.");if(!privacyAgree.checked)return alert("개인정보 수집 및 이용 동의가 필요합니다.");let yp=getYearPillarByIpchun(y,m,d),mp=getMonthPillarAccurate(y,m,d,yp),dp=getDayPillarAccurate(y,m,d),hp=h==="unknown"?"시간 모름":getHourPillarAccurate(dp,h),pillars=h==="unknown"?[yp,mp,dp]:[yp,mp,dp,hp],score=countElements(pillars),main=elementMap[dp[0]],nameInfo=analyzeKoreanName(nm),nameEl=nameInfo.element,synergy=main===nameEl?"사주 중심 오행과 한글 이름 흐름이 비슷해 자기 색깔이 강한 편입니다.":"사주 중심 오행과 한글 이름 흐름이 달라 보완적인 흐름으로 볼 수 있습니다.";result.style.display="block";result.innerHTML=`<h2>종합 리포트</h2><b>년주:</b> ${yp} / <b>월주:</b> ${mp} / <b>일주:</b> ${dp} / <b>시주:</b> ${hp}<br><b>입력 기준:</b> ${calendarText()}<br><b>성별 반영:</b> ${genderText()}<br><b>사주 중심 오행:</b> ${main}<br><b>기본 성향:</b> ${elementText[main]}<br><br><h3>오행 균형 분석</h3>${elementBalanceText(score)}<br><br><h3>십신 기초 분석</h3>${tenGodSummary(dp[0],pillars)}<br><br><h3>추가 성향 풀이</h3>${extraInfoText()}<br><br><h3>이름 풀이</h3><b>한글 이름 흐름:</b> ${nameEl}<br>${nameInfo.summary}<br>${synergy}<br><br><h3>관상 풀이</h3>${faceText()}<br><br><h3>손금 풀이</h3>${palmText()}<br><br><h3>종합 분석</h3>${combinedAnalysis(main,bloodType.value,mbti.value,jobType.value,jobDetail.value)}<br><br><h3>종합 조언</h3>사주는 타고난 기질, 이름은 보완 에너지, 관상은 외적 인상과 사회적 흐름, 손금은 현재 성향과 생활 흐름을 보는 참고 요소로 활용하면 좋습니다.`;result.scrollIntoView({behavior:'smooth'})}
 </script>
 </body>
 </html>
